@@ -17,8 +17,10 @@ module Bh
       end
 
       initializer 'bh.add_views' do |app|
-        views_path = File.expand_path '../../views', __FILE__
-        ActionController::Base.prepend_view_path views_path
+        ::Rails.application.reloader.to_prepare do
+          views_path = File.expand_path '../../views', __FILE__
+          ActionController::Base.prepend_view_path views_path
+        end
       end
     end
   end
