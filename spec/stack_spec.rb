@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'timeout'
 
 describe 'The stack of helpers a block is nested in' do
   let(:bh) { RailsView.new }
@@ -16,7 +17,7 @@ describe 'The stack of helpers a block is nested in' do
     end
 
     begin
-      expect(inside_nav.pop(timeout: 5)).to be true
+      Timeout.timeout(5) { inside_nav.pop }
       expect(bh.link_to 'content', '/').to eq '<a href="/">content</a>'
     ensure
       release << true

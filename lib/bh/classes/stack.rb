@@ -9,8 +9,7 @@ module Bh
         stack.unshift item
         yield
       ensure
-        index = stack.index{|helper| helper.equal? item}
-        stack.delete_at index if index
+        stack.shift if stack.first.equal? item
       end
 
       def self.find(helper_class)
