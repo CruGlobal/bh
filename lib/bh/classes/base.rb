@@ -83,8 +83,7 @@ module Bh
       end
 
       def stack(&block)
-        Stack.unshift self
-        yield.tap{ Stack.shift }
+        Stack.with self, &block
       end
 
       def html_attributes
