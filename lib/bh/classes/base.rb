@@ -83,12 +83,7 @@ module Bh
       end
 
       def stack(&block)
-        Stack.unshift self
-        begin
-          yield
-        ensure
-          Stack.shift
-        end
+        Stack.with self, &block
       end
 
       def html_attributes

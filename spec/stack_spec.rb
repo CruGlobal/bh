@@ -14,9 +14,9 @@ describe 'The stack of helpers a block is nested in' do
         'content'
       end
     end
-    inside_nav.pop
 
     begin
+      expect(inside_nav.pop(timeout: 5)).to be true
       expect(bh.link_to 'content', '/').to eq '<a href="/">content</a>'
     ensure
       release << true
@@ -27,5 +27,13 @@ describe 'The stack of helpers a block is nested in' do
   specify 'is popped when a helper block raises' do
     expect { bh.nav { raise 'boom' } }.to raise_error 'boom'
     expect(bh.link_to 'content', '/').to eq '<a href="/">content</a>'
+  end
+
+  specify 'keeps the enclosing helpers when a nested block raises' do
+    html = bh.navbar do
+      expect { bh.nav { raise 'boom' } }.to raise_error 'boom'
+      bh.nav { 'content' }
+    end
+    expect(html).to include '<ul class="nav navbar-nav">content</ul>'
   end
 end

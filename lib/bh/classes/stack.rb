@@ -1,15 +1,16 @@
 module Bh
   module Classes
-    # Must stay per thread: with one shared stack, a view on one thread sees
-    # the helpers another thread is rendering (e.g. a mailer's link_to finds a
-    # web request's nav and calls current_page?, which needs a request).
+    # Must stay fiber-local (Thread.current[], not thread_variable_get): views
+    # rendering at the same time, on other threads or in other fibers of this
+    # thread (streamed layouts, fiber-per-request servers), must never see each
+    # other's helpers.
     class Stack
-      def self.unshift(item)
+      def self.with(item)
         stack.unshift item
-      end
-
-      def self.shift
-        stack.shift
+        yield
+      ensure
+        index = stack.index{|helper| helper.equal? item}
+        stack.delete_at index if index
       end
 
       def self.find(helper_class)
